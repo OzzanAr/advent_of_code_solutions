@@ -6,19 +6,7 @@
 
 using namespace std;
 
-map<string, int> m{
-    {"one", 1},   // 3
-    {"two", 2},   // 3
-    {"three", 3}, // 5
-    {"four", 4},  // 4
-    {"five", 5},  // 4
-    {"six", 6},   // 3
-    {"seven", 7}, // 5
-    {"eight", 8}, // 5
-    {"nine", 9},  // 4
-};
-
-map<int, string> mDigit{
+map<int, string> digitWordmap{
     {1, "one"},
     {2, "two"},
     {3, "three"},
@@ -53,13 +41,13 @@ map<int, int> SetupDigitIndicies(string text)
 }
 
 void CalculatePosition(string foundString, map<int, int> &result, int currentIndex, int position = 0) {
-  position = foundString.find(mDigit[currentIndex], position);
+  position = foundString.find(digitWordmap[currentIndex], position);
 
   if(position == -1) {
     return;
   }
   
-  result[position] = m[mDigit[currentIndex]];
+  result[position] = currentIndex;
   CalculatePosition(foundString, result, currentIndex, position + 1);
 }
 
@@ -70,7 +58,7 @@ void FindWordIndicies(int index, string foundString, map<int, int> &result)
     return;
   }
 
-  if (foundString.find(mDigit[index]) != -1)
+  if (foundString.find(digitWordmap[index]) != -1)
   {
     CalculatePosition(foundString, result, index);
   }
@@ -79,19 +67,28 @@ void FindWordIndicies(int index, string foundString, map<int, int> &result)
 }
 
 int main()
-{
-  string text;
-  fstream data("test.txt");
+{  
   int sum = 0;
+  int first, last;
+  string text;
+  fstream data("input.txt");
   map<int, int> results;
 
   while (getline(data, text))
   {
     results = SetupDigitIndicies(text);
-    print_map(results);
     FindWordIndicies(1, text, results);
-    print_map(results);
+    auto first_element = results.begin(); // Iterator to first element
+    auto last_element = prev(results.end()); // Iterator to last element
+
+    first = first_element->second;
+    last = last_element->second;
+            
+    first = stoi(to_string(first) + to_string(last));
+    sum += first;
   }
+
+  cout << sum << endl;
 
   data.close();
 
