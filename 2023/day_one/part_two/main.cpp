@@ -52,24 +52,30 @@ map<int, int> SetupDigitIndicies(string text)
   return values;
 }
 
-void FindWordIndicies(int index, string foundString, map<int, int> &result, int counter = 0)
+void CalculatePosition(string foundString, map<int, int> &result, int currentIndex, int position = 0) {
+  position = foundString.find(mDigit[currentIndex], position);
+
+  if(position == -1) {
+    return;
+  }
+  
+  result[position] = m[mDigit[currentIndex]];
+  CalculatePosition(foundString, result, currentIndex, position + 1);
+}
+
+void FindWordIndicies(int index, string foundString, map<int, int> &result)
 {
   if (index > 9)
   {
     return;
   }
 
-  int pos = foundString.find(mDigit[index]);
-
-  if (pos != -1)
+  if (foundString.find(mDigit[index]) != -1)
   {
-    // cout << foundString << endl;
-    foundString.erase(pos + 1, 1);
-    result[pos] = m[mDigit[index]];
-    FindWordIndicies(index, foundString, result, counter);
+    CalculatePosition(foundString, result, index);
   }
 
-  FindWordIndicies(index + 1, foundString, result, counter);
+  FindWordIndicies(index + 1, foundString, result);
 }
 
 int main()
@@ -86,8 +92,6 @@ int main()
     FindWordIndicies(1, text, results);
     print_map(results);
   }
-
-  //  FindWordIndicies(1, text, results);
 
   data.close();
 
